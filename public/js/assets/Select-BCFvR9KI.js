@@ -1,0 +1,1 @@
+import{j as e}from"./app--oISFhqW.js";function l({className:s,options:o,...n}){return e.jsxs("select",{...n,className:"border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm "+s,children:[e.jsx("option",{children:"Choisir..."}),o.map((r,a)=>e.jsx("option",{value:r.value,className:"",children:r.label},a))]})}export{l as S};

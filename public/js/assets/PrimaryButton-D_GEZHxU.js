@@ -1,0 +1,1 @@
+import{j as n}from"./app--oISFhqW.js";function a({className:r="",disabled:t,children:o,...e}){return n.jsx("button",{...e,className:`bg-purple-950 hover:bg-purple-800 text-white font-medium py-2 px-5 rounded-lg transition-all transform hover:scale-[1.02] ${t&&"opacity-25"} `+r,disabled:t,children:o})}export{a as P};

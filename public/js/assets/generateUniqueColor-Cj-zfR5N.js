@@ -1,0 +1,1 @@
+function u(n){function r(t){let o=0;for(let e=0;e<t.length;e++)o=t.charCodeAt(e)+((o<<5)-o);return o}function c(t){const o=(t&16777215).toString(16).toUpperCase();return"00000".substring(0,6-o.length)+o}return`#${c(r(n))}`}export{u as g};

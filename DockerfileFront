@@ -1,0 +1,17 @@
+FROM node:lts-alpine
+
+# Définition du dossier de travail
+WORKDIR /app
+
+# Copie et installation des dépendances
+COPY package.json package-lock.json ./
+RUN npm install --omit=dev
+
+# Exposition du port
+EXPOSE 5173
+
+# Copie du projet
+COPY . /app
+
+# Commande de lancement
+CMD ["npm", "run", "dev", "--host"]

@@ -1,0 +1,1 @@
+const o=e=>{const n=new Date(e),t={weekday:"short",year:"numeric",month:"long",day:"numeric",hour:"numeric",minute:"numeric",second:"numeric",hour12:!1};return n.toLocaleDateString("fr-FR",t)};export{o as f};

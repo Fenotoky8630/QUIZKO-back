@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: php
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - vendor:/app/vendor
+    ports:
+      - 8000:8000
+    environment:
+      APP_ENV: local
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: laravel
+      DB_USERNAME: laravel_user
+      DB_PASSWORD: laravel_pass
+    command: >
+      sh -c "
+      php artisan key:generate &&
+      php artisan migrate --force &&
+      php artisan db:seed --class=UserSeeder --force &&
+      php-fpm
+      "
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD", "php", "-m"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  front:
+    build:
+      context: .
+      dockerfile: DockerfileFront
+    container_name: front
+    restart: unless-stopped
+    depends_on:
+      - php
+    volumes:
+      - node_modules:/app/node_modules
+    ports:
+      - 5173:5173
+    networks:
+      - app_network
+
+  db:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: laravel_user
+      MYSQL_PASSWORD: laravel_pass
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - app_network
+
+volumes:
+  mysql_data:
+  vendor:
+  node_modules:
+
+networks:
+  app_network:
+    driver: bridge
