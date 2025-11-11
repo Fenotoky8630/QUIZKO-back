@@ -25,6 +25,8 @@ use Illuminate\Http\Request;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
+// No Authentication needs routes
 Route::post('/subscribe', [AuthenticatedSessionController::class, 'subscribeCandidate'])->name('subscribe_candidate');
 
 Route::post('/send-reset-code', [PasswordResetController::class, 'sendResetCode']);//email
@@ -34,6 +36,11 @@ Route::post('/verify-reset-code', [PasswordResetController::class, 'verifyResetC
 Route::post('/new-password', [PasswordResetController::class, 'resetPassword']);//email, token , new_password
 
 Route::get('/levels', [PostController::class, 'index'])->name('levels.index');
+
+Route::post('/candidate/generate-qr', [ExamQrController::class, 'requestQr']);
+
+Route::post('/recruiter/scan-qr', [PresenceController::class, 'handleScan']);
+
 
 Route::middleware('auth:sanctum')->group(function() {
 
@@ -62,9 +69,5 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::put('/password', [PasswordController::class, 'update'])->name('password.update'); //  current_password: "oldpassword123", password: "newpassword123", password_confirmation: "newpassword123"
 
     Route::get('/check-token', [TokenController::class, 'checkToken'])->name('check-token');
-
-
-    Route::post('/candidate/generate-qr', [ExamQrController::class, 'requestQr']);
-    Route::post('/interview/scan', [PresenceController::class, 'handleScan']);
 
 });

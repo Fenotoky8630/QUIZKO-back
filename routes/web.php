@@ -6,6 +6,7 @@ use App\Http\Controllers\CandidateAnswerController;
 use App\Http\Controllers\CandidateNoteController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\InterviewController;
+use App\Http\Controllers\PresenceController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\QuestionController;
@@ -152,5 +153,10 @@ Route::middleware('auth')->prefix('note')->group(function () {
 Route::middleware('auth')->prefix('is-student-passed')->group(function () {
     Route::get('/{interview_id}/{candidate_id}', [CandidateNoteController::class, 'checkCandidateNotes'])->name('student_note.checkCandidateNotes');//student
 });
+
+Route::post('/scan', [PresenceController::class, 'handleScan']);
+
+Route::get('/presence', [PresenceController::class, 'showPresence'])
+    ->name('presence.list');
 
 require __DIR__.'/auth.php';

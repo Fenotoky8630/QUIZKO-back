@@ -2,60 +2,54 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Candidate;
 use Illuminate\Http\Request;
-use App\Models\User;
 use App\Models\ExamQrCode;
 use Illuminate\Support\Str;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class ExamQrController extends Controller
 {
+    /**
+     * ✅ Génère un QR ou retourne l’existant
+     */
     public function requestQr(Request $request)
     {
         $request->validate([
-            'id' => 'required|integer',//identifiant candidat
-            'interview_id' => 'required|integer',
-
+            'candidate_id'           => 'required|integer',   // Candidate ID
+            'interview_id'=> 'required|integer',
         ]);
 
-        $interview_id = $request -> interview_id;
-
-        // 1️⃣ Vérifier si le candidat existe
-        $candidate = User::find($request->id);
+        $candidate = Candidate::find($request->candidate_id);
         if (!$candidate) {
             return response()->json(['error' => 'Matricule invalide'], 404);
         }
 
-        // 2️⃣ Vérifier si un QR a déjà été généré pour ce candidat
-        $existingQr = ExamQrCode::where('candidate_id', $candidate->id && 'interview_id', $interview_id)->first();
+        // ✅ Vérifie si déjà généré
+        $existingQr = ExamQrCode::where('candidate_id', $candidate->id)
+            ->where('interview_id', $request->interview_id)
+            ->first();
 
         if ($existingQr) {
-            // ✅ Retourner le QR déjà généré
-            $qrImage = QrCode::size(250)->generate(json_encode([
-                'token' => $existingQr
-            ]));
-
             return response()->json([
                 'message' => 'QR déjà généré',
-                'qr' => base64_encode($qrImage)
+                'qr'      => $existingQr
             ]);
         }
 
-        // 3️⃣ Générer un nouveau QR code
-        $token = Str::uuid()->toString();
+        // ✅ Sinon créer
+        $token = Str::uuid();
 
         $newQr = ExamQrCode::create([
             'candidate_id' => $candidate->id,
-            'interview_id' => $interview_id,
-            'token' => $token,
-            'is_used' => false,
+            'interview_id' => $request->interview_id,
+            'token'        => $token,
+            'status'       => 'valid',
             'generated_at' => now(),
-            'status' => 'valid'
         ]);
 
         return response()->json([
-            'message' => 'QR code généré avec succès',
-            'qr' => $newQr
+            'message' => 'QR généré',
+            'qr'      => $newQr
         ]);
     }
 }

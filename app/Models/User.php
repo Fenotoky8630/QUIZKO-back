@@ -8,15 +8,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
-{
-    use HasApiTokens, HasFactory, Notifiable;
+class User extends Authenticatable {
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    use HasFactory, Notifiable, HasApiTokens;
+
+    
     protected $fillable = [
         'name',
         'email',
@@ -29,12 +25,14 @@ class User extends Authenticatable
         'image'
     ];
 
+    public function candidate(){
+        return $this->hasOne(Candidate::class);
+    }
+
     public function recruiters(){
         return $this->hasMany(Recruiter::class);
      }
-     public function candidate(){
-        return $this->hasOne(Candidate::class);
-     }
+     
 
     /**
      * The attributes that should be hidden for serialization.
